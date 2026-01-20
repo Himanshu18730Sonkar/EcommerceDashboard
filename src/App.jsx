@@ -1,11 +1,11 @@
 import React from 'react'
-import { Dashboard } from './pages/Dashboard'
-import { Orders } from './pages/Orders'
-import { Products } from './pages/Products'
-import { Customers } from './pages/Customers'
-import { Analytics } from './pages/Analytics'
-import { Settings } from './pages/Settings'
-import { Profile } from './pages/Profile'
+const Dashboard = React.lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })))
+const Orders = React.lazy(() => import('./pages/Orders').then(m => ({ default: m.Orders })))
+const Products = React.lazy(() => import('./pages/Products').then(m => ({ default: m.Products })))
+const Customers = React.lazy(() => import('./pages/Customers').then(m => ({ default: m.Customers })))
+const Analytics = React.lazy(() => import('./pages/Analytics').then(m => ({ default: m.Analytics })))
+const Settings = React.lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })))
+const Profile = React.lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })))
 import { DashboardLayout } from './layouts/DashboardLayout'
 
 function App() {
@@ -28,23 +28,29 @@ function App() {
   }, [isDark])
 
   const renderPage = React.useCallback(() => {
-    switch (currentPage) {
-      case 'orders':
-        return <Orders />
-      case 'products':
-        return <Products />
-      case 'customers':
-        return <Customers />
-      case 'analytics':
-        return <Analytics />
-      case 'settings':
-        return <Settings />
-      case 'profile':
-        return <Profile />
-      case 'dashboard':
-      default:
-        return <Dashboard />
-    }
+    return (
+      <React.Suspense fallback={<div className="flex items-center justify-center h-screen"><span>Loading...</span></div>}>
+        {(() => {
+          switch (currentPage) {
+            case 'orders':
+              return <Orders />
+            case 'products':
+              return <Products />
+            case 'customers':
+              return <Customers />
+            case 'analytics':
+              return <Analytics />
+            case 'settings':
+              return <Settings />
+            case 'profile':
+              return <Profile />
+            case 'dashboard':
+            default:
+              return <Dashboard />
+          }
+        })()}
+      </React.Suspense>
+    )
   }, [currentPage])
 
   const handleNavigate = React.useCallback((page) => {
